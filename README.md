@@ -10,9 +10,9 @@ Building an event-driven application called CAPS - The Code Academy Parcel Servi
 
 ### Links and Resources
 
-- [GitHub Actions ci/cd]()
+- [GitHub Actions ci/cd](https://github.com/CodingKao/caps/pulls?q=is%3Apr+is%3Aclosed)
 
-- [back-end prod server url]()
+- [back-end prod server url](https://caps-wvwi.onrender.com)
 
 ### Collaborators
 
