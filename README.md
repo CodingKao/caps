@@ -1,6 +1,6 @@
 # LAB 11: Event Driven Applications
 
-## Project: Basic-Authentication
+## Project: CAPS
 
 ### Author: Kao Saelor
 
