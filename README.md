@@ -39,6 +39,6 @@ Clone repo, `npm i`, then run `nodemon` in the terminal
 
 To run tests, after running `npm i`, run the command `npm test`
 
-#### Lab 6 UML
+#### Lab 11 UML
 
 ![Lab 11 UML image]()
