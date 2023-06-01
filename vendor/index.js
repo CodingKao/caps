@@ -1,64 +1,44 @@
-'use strict';
+const io = require('socket.io-client');
+const socket = io.connect('http://localhost:3000/caps'); // Replace the URL with the appropriate server URL
 
-const eventPool = require('../eventPool');
-const Chance = require('chance');
+const storeName = '1-206-flowers'; // Simulated vendor store name
 
-function simulatePickup(storeName) {
-  const payload = generateOrderPayload(storeName);
-  eventPool.emit('pickup', payload);
-  console.log('EVENT:', {
-    event: 'pickup',
-    time: new Date().toISOString(),
-    payload,
-  });
-}
-
-function generateOrderPayload(storeName) {
-  const chance = new Chance();
-  const orderId = chance.guid();
-  const customer = chance.name();
-  const address = chance.address();
-  const timestamp = chance.timestamp();
-
-  return {
-    store: storeName,
-    orderId,
-    customer,
-    address,
-    timestamp,
+// Emit the pickup event with a payload
+function sendPickup() {
+  const payload = {
+    vendor: storeName,
+    orderId: generateOrderId(),
+    customerName: generateCustomerName(),
+    address: generateAddress(),
   };
+  socket.emit('pickup', payload);
 }
 
-function processEventData(event) {
-  if (event.event === 'pickup') {
-    const { orderId, customer, address } = event.payload;
-    return {
-      orderId,
-      customer,
-      address,
-      status: 'picked up',
-    };
-  } else if (event.event === 'in-transit') {
-    const { orderId } = event.payload;
-    return {
-      orderId,
-      status: 'in transit',
-    };
-  } else if (event.event === 'delivered') {
-    const { orderId } = event.payload;
-    return {
-      orderId,
-      status: 'delivered',
-    };
-  }
+// Simulate receiving the delivered event from the server
+socket.on('delivered', (payload) => {
+  console.log(`Thank you for your order, ${payload.customerName}!`);
+});
+
+// Helper functions to generate random order data
+function generateOrderId() {
+  return Math.floor(Math.random() * 1000) + 1;
 }
 
-module.exports = {
-  start: function () {
-    const storeName = '1-206-flowers';
-    setInterval(() => {
-      simulatePickup(storeName);
-    }, 5000);
-  },
-  processEventData: processEventData,
-};
+function generateCustomerName() {
+  const names = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+  return names[Math.floor(Math.random() * names.length)];
+}
+
+function generateAddress() {
+  const addresses = ['123 Main St', '456 Elm St', '789 Oak St'];
+  return addresses[Math.floor(Math.random() * addresses.length)];
+}
+
+// Simulate sending multiple orders
+const intervalId = setInterval(sendPickup, 3000); // Adjust the interval as needed
+
+// Stop sending orders after a certain time
+setTimeout(() => {
+  clearInterval(intervalId);
+  process.exit(0);
+}, 30000); // Adjust the timeout as needed

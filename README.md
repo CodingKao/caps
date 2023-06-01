@@ -41,4 +41,9 @@ To run tests, after running `npm i`, run the command `npm test`
 
 #### Lab 11 UML
 
-![Lab 11 UML image]()
+![Lab 11 UML image](./assets/Event-Driven-Application-uml.png)
+
+#### Lab 12 UML
+
+![Lab 12 UML image](./assets/Socket.io-uml.png)
+

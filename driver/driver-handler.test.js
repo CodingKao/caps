@@ -1,36 +1,40 @@
-'use strict';
+const io = require('socket.io-client');
+const faker = require('faker');
 
-const eventPool = require('../eventPool');
-const handler = require('./handler');
+const socket = io.connect('http://localhost:3000/caps'); // Connect to the CAPS server
 
-describe('Driver event handlers', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+// Simulate pickup event
+test('should emit in-transit event after receiving a pickup event', (done) => {
+  const payload = {
+    orderId: faker.random.uuid(),
+    vendor: '1-206-flowers',
+    customer: faker.name.findName(),
+    address: faker.address.streetAddress(),
+  };
+
+  socket.emit('pickup', payload);
+
+  // Listen for in-transit event
+  socket.on('in-transit', (inTransitPayload) => {
+    expect(inTransitPayload).toEqual(payload);
+    done();
   });
+});
 
-  test('pickup event handler should log the pickup message and emit in-transit event', () => {
-    const consoleSpy = jest.spyOn(console, 'log');
-    const emitSpy = jest.spyOn(eventPool, 'emit');
-    const payload = {
-      orderId: 'e3669048-7313-427b-b6cc-74010ca1f8f0',
-    };
+// Simulate delivered event
+test('should emit delivered event after a random delay', (done) => {
+  const payload = {
+    orderId: faker.random.uuid(),
+    vendor: '1-206-flowers',
+    customer: faker.name.findName(),
+    address: faker.address.streetAddress(),
+  };
 
-    handler.pickupPackage(payload);
+  socket.emit('pickup', payload);
 
-    expect(consoleSpy).toHaveBeenCalledWith(`DRIVER: picked up ${payload.orderId}`);
-    expect(emitSpy).toHaveBeenCalledWith('in-transit', payload);
-  });
-
-  test('in-transit event handler should log the delivered message and emit delivered event', () => {
-    const consoleSpy = jest.spyOn(console, 'log');
-    const emitSpy = jest.spyOn(eventPool, 'emit');
-    const payload = {
-      orderId: 'e3669048-7313-427b-b6cc-74010ca1f8f0',
-    };
-
-    handler.deliverPackage(payload);
-
-    expect(consoleSpy).toHaveBeenCalledWith(`DRIVER: delivered ${payload.orderId}`);
-    expect(emitSpy).toHaveBeenCalledWith('delivered', payload);
+  // Listen for delivered event
+  socket.on('delivered', (deliveredPayload) => {
+    expect(deliveredPayload).toEqual(payload);
+    done();
   });
 });
