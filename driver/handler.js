@@ -1,23 +1,22 @@
-'use strict';
-const eventPool = require('../eventPool');
+const io = require('socket.io-client');
 
-eventPool.on('pickup', payload => {
-  console.log(`DRIVER: picked up ${payload.orderId}`);
-  eventPool.emit('in-transit', payload);
+const socket = io.connect('http://localhost:3000/caps'); // Connect to the CAPS server
+
+// Listen for pickup events from the CAPS server
+socket.on('pickup', (payload) => {
+  console.log(`Picking up order ${payload.orderId} from ${payload.vendor}`);
+  // Emit the in-transit event to the CAPS server
+  socket.emit('in-transit', payload);
+
+  // Simulate delivery after a random delay between 3 to 5 seconds
+  setTimeout(() => {
+    console.log(`Delivering order ${payload.orderId} to ${payload.customer}`);
+    // Emit the delivered event to the CAPS server
+    socket.emit('delivered', payload);
+  }, getRandomDelay());
 });
 
-eventPool.on('in-transit', payload => {
-  console.log(`DRIVER: delivered ${payload.orderId}`);
-  eventPool.emit('delivered', payload);
-});
-
-module.exports = {
-  pickupPackage: payload => {
-    console.log(`DRIVER: picked up ${payload.orderId}`);
-    eventPool.emit('in-transit', payload);
-  },
-  deliverPackage: payload => {
-    console.log(`DRIVER: delivered ${payload.orderId}`);
-    eventPool.emit('delivered', payload);
-  },
-};
+// Generate a random delay between 3 to 5 seconds (in milliseconds)
+function getRandomDelay() {
+  return Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
+}
