@@ -1,10 +1,12 @@
 {
   "name": "caps",
   "version": "1.0.0",
-  "description": "",
-  "main": "hub.js",
-  "scripts": {
-    "start": "node hub.js",
+  "description": "Project: Lab 12: Socket.io",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },  "scripts": {
+    "start": "node index.js",
     "db:config": "sequelize init:config",
     "db:create": "sequelize db:create",
     "test-watch": "NODE_ENV=test jest --verbose --coverage --watchAll",
