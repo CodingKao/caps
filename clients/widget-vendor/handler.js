@@ -1,54 +1,29 @@
 'use strict';
 
-const { createOrder , packageDelivered } = require('./handler');
+var Chance = require('chance');
+var chance = new Chance();
 
-jest.mock('../socket.js', () => {
-  const emitMock = jest.fn();
-
-  return {
-    io: {
-      connect: jest.fn().mockReturnValue({
-        emit: emitMock,
-      }),
-    },
-  };
-});
-
-let consoleSpy;
-
-beforeAll(() => {
-  consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-});
-
-afterAll(() => {
-  consoleSpy.mockRestore();
-});
-
-describe('Flower handler tests', () => {
-
-  let socket;
-  let payload;
-  beforeEach(() => {
-    socket = require('../socket.js').io.connect(); // 
+//used lab build out and modified this to fit widget vendor needed for lab 13
+const createOrder = (socket, payload = null) => {
+  if(!payload){
     payload = {
-      store: 'test',
-      orderID: 123,
-      customer: 'customer',
-      address: 'address',
+      store: 'acme-widgets',
+      orderID: chance.guid(),
+      customer: chance.name(),
+      address: chance.address(),
     };
-  });
 
+  }
+  //Join room specific to store name
+  socket.emit('JOIN', payload.store);
+  console.log(`VENDOR: Order #:${payload.orderID} ready for pickup.`);
+  socket.emit('pickup', payload);
 
-  test('Can create an order payload', () => {
-    createOrder(socket, payload);
-    expect(consoleSpy).toHaveBeenCalledWith(`VENDOR: Order #:${payload.orderID} ready for pickup.`);
-    expect(socket.emit).toHaveBeenCalledWith('pickup', payload);
-  });
+};
+//vendor thank you message once it receives the delivered
+const packageDelivered = (payload) => {
+  console.log(`VENDOR: Thank you for your order ${payload.customer}`);
 
-  test('Confirms delivery', () => {
-    packageDelivered(payload);
-    expect(consoleSpy).toHaveBeenCalledWith(`VENDOR: Thank you for your order ${payload.customer}`);
-  });
+};
 
-
-});
+module.exports = { createOrder, packageDelivered }; 

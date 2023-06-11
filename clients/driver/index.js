@@ -3,10 +3,10 @@
 const { io } = require('socket.io-client');
 const socket = io.connect('http://localhost:3001/caps');
 
-
+// to get all stored messages for Drive in Queue
 socket.emit('getAll', { queueId: 'DRIVER' });
 
-
+//modified handlers to just be listeners/ emits.
 socket.on('pickup', (payload) => {
   setTimeout(() => {
     console.log(`DRIVER: picked up ${payload.orderID}`);

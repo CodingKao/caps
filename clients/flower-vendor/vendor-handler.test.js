@@ -3,12 +3,12 @@
 const { createOrder , packageDelivered } = require('./handler');
 
 jest.mock('../socket.js', () => {
-  const emitMock = jest.fn(); 
+  const emitMock = jest.fn(); // Create a mock function for 'emit'
 
   return {
     io: {
       connect: jest.fn().mockReturnValue({
-        emit: emitMock,
+        emit: emitMock, // Use the mock function for 'emit'
       }),
     },
   };
@@ -26,10 +26,11 @@ afterAll(() => {
 
 describe('Flower handler tests', () => {
 
+  //Chat GPT helped with line 31 to 41 with generating socket and payload and requiring the socket down here for connect
   let socket;
   let payload;
   beforeEach(() => {
-    socket = require('../socket.js').io.connect(); //
+    socket = require('../socket.js').io.connect(); // Use the mock socket object
     payload = {
       store: 'test',
       orderID: 123,
